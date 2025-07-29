@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: pdf-converter-api
+    plan: free
+    region: singapore
+    autoDeploy: true
+    branch: main
+    buildCommand: ""
+    startCommand: ""

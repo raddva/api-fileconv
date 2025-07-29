@@ -1,0 +1,45 @@
+# 🧠 Web framework
+Flask==2.3.3
+flask-cors==4.0.0
+
+# 📄 PDF libraries
+PyPDF2==3.0.1        # merge, split, rotate, extract
+PyMuPDF==1.23.24     # advanced PDF editing (fitz)
+pdf2image==1.17.0     # render PDF pages to images (needs poppler)
+pdfplumber==0.10.2    # extract text
+reportlab==4.0.9      # generate PDFs
+pikepdf==8.10.0       # encrypt, decrypt PDFs (qpdf backend)
+
+# 📝 Word to PDF / PDF to Word
+docx2pdf==0.1.8       # convert Word (.docx) to PDF (Windows/macOS only)
+mammoth==1.6.0        # extract Word (.docx) to HTML or text
+python-docx==1.1.0    # manipulate Word documents
+
+# 🗜️ Compression / Images
+Pillow==10.2.0        # image compression, processing
+img2pdf==0.5.1        # images to PDF
+
+# 🔧 Utilities
+python-magic==0.4.27  # detect file types
+Werkzeug==2.3.7       # WSGI server for Flask
+gunicorn==21.2.0      # production server
+
+# ✅ Spreadsheet to PDF
+pandas==2.2.2           # Already useful, leave as-is
+openpyxl==3.1.2         # Needed to write .xlsx files from pandas
+
+# ✅ HTML to PDF (used for xlsx to PDF)
+weasyprint==60.2        # Better than xhtml2pdf for PDF rendering
+
+# 📊 Excel & table conversions
+openpyxl==3.1.2         # Save .xlsx files from pandas
+
+# 📄 HTML to PDF engine (for xlsx-to-pdf)
+weasyprint==60.2
+
+# Word, Excel, PPT
+python-pptx==0.6.21
+
+# ✅ Aspose for Excel & PowerPoint to PDF
+aspose-cells==24.6.0     # Excel to PDF (XLS/XLSX)
+aspose-slides==24.6.0    # PowerPoint to PDF (PPT/PPTX)
