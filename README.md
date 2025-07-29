@@ -15,3 +15,21 @@ This is the backend for a full-stack file converter application built using Flas
 - Render-compatible deployment (`render.yaml` included)
 
 ## 📁 Project Structure
+
+backend/
+├── temp/ # Temporary working files (ignored in Git)
+├── utils/ # All core conversion utilities
+│ ├── convert.py # DOCX ↔️ PDF, IMG ↔️ PDF
+│ ├── merge.py # PDF merge logic
+│ ├── split.py # PDF split logic
+├── app.py # Flask app entry point
+├── Dockerfile # Docker setup for deployment
+├── render.yaml # Render deploy config
+└── requirements.txt # Python dependencies
+
+## 🚀 Getting Started
+
+1. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
