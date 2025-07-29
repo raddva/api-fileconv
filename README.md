@@ -33,3 +33,23 @@ backend/
    ```bash
    pip install -r requirements.txt
    ```
+2. **Run the Server**
+   ```bash
+   python app.py
+   ```
+3. **Docker (optional)**
+   ```bash
+   docker build -t file-converter .
+   docker run -p 5000:5000 file-converter
+   ```
+
+## 📡 API Endpoints
+
+- Method Endpoint Description
+- POST /pdf-to-docx Converts PDF → DOCX
+- POST /docx-to-pdf Converts DOCX → PDF
+- ... (More coming soon)
+
+## 📝 License
+
+MIT License
