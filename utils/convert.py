@@ -1,21 +1,22 @@
 import os
 import uuid
 import subprocess
-from pdf2image import convert_from_bytes
 from docx2pdf import convert as docx_convert
 from pdf2docx import Converter
 from PIL import Image
 from pptx import Presentation
 import pandas as pd
 import pdfplumber
-import fitz  # PyMuPDF
+import fitz
 import zipfile
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import landscape, A4
+from xlsx2html import xlsx2html
+from xhtml2pdf import pisa
+import io
+from pptx.util import Inches
 
-def zip_images(image_paths, zip_path):
+def zip_files(file_paths, zip_path):
     with zipfile.ZipFile(zip_path, 'w') as zipf:
-        for path in image_paths:
+        for path in file_paths:
             arcname = os.path.basename(path)
             zipf.write(path, arcname)
 
@@ -54,49 +55,54 @@ def pdf_to_images(file_bytes):
 
 # PPTX to PDF
 def pptx_to_pdf(input_path, output_path):
-    prs = Presentation(input_path)
-    image_paths = []
+    binary_path = os.path.join(os.path.dirname(__file__), "../bin/OfficeToPDF")
+    binary_path = os.path.abspath(binary_path)
 
-    for i, slide in enumerate(prs.slides):
-        img = Image.new('RGB', (1280, 720), 'white')  # blank slide
-        img_path = f'temp/slide_{uuid.uuid4().hex}_{i+1}.png'
-        img.save(img_path)
-        image_paths.append(img_path)
-
-    c = canvas.Canvas(output_path, pagesize=landscape(A4))
-    for img_path in image_paths:
-        c.drawImage(img_path, 0, 0, width=landscape(A4)[0], height=landscape(A4)[1])
-        c.showPage()
-    c.save()
-
+    try:
+        subprocess.run([
+            binary_path, input_path, output_path
+        ], check=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"PPTX to PDF conversion failed: {e}")
 
 # PDF to PPTX
 def pdf_to_pptx(input_path, output_path):
-    images = pdf_to_images(open(input_path, 'rb').read())
+    doc = fitz.open(input_path)
     prs = Presentation()
-    for img_path in images:
+    prs.slide_width = Inches(11.69)
+    prs.slide_height = Inches(8.27)
+
+    image_paths = []
+
+    for i, page in enumerate(doc):
+        pix = page.get_pixmap(dpi=150)
+        img_path = f"temp_pdf_slide_{uuid.uuid4().hex}_{i+1}.png"
+        pix.save(img_path)
+        image_paths.append(img_path)
+
         slide = prs.slides.add_slide(prs.slide_layouts[6])
-        slide.shapes.add_picture(img_path, 0, 0, width=prs.slide_width)
+        slide.shapes.add_picture(img_path, 0, 0, width=prs.slide_width, height=prs.slide_height)
+
     prs.save(output_path)
+
+    for path in image_paths:
+        try:
+            os.remove(path)
+        except Exception as e:
+            print(f"Warning: failed to delete temp image {path}: {e}")
 
 
 # XLSX to PDF
 def xlsx_to_pdf(input_path, output_path):
-    df = pd.read_excel(input_path)
-    c = canvas.Canvas(output_path, pagesize=A4)
+    html_stream = io.StringIO()
+    xlsx2html(input_path, html_stream, sheet="Sheet1")
+    html_content = html_stream.getvalue()
 
-    x, y = 50, 800
-    for i, row in df.iterrows():
-        line = ", ".join([str(cell) for cell in row])
-        c.drawString(x, y, line[:120])  # crude text draw
-        y -= 15
-        if y < 50:
-            c.showPage()
-            y = 800
+    with open(output_path, "wb") as pdf_file:
+        pisa_status = pisa.CreatePDF(io.StringIO(html_content), dest=pdf_file)
 
-    c.save()
-
-
+    if pisa_status.err:
+        raise Exception("Failed to convert Excel to PDF with formatting.")
 
 # PDF to XLSX
 def pdf_to_xlsx(input_path, output_path):
