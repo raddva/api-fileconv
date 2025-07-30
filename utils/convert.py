@@ -1,7 +1,6 @@
 import os
 import uuid
 import subprocess
-from mammoth import convert_to_html
 from xhtml2pdf import pisa  # or use weasyprint if installed
 from pdf2docx import Converter
 from PIL import Image
@@ -10,8 +9,6 @@ import pandas as pd
 import pdfplumber
 import fitz
 import zipfile
-from xlsx2html import xlsx2html
-from xhtml2pdf import pisa
 import io
 from pptx.util import Inches
 
@@ -98,15 +95,37 @@ def pdf_to_pptx(input_path, output_path):
 
 # XLSX to PDF
 def xlsx_to_pdf(input_path, output_path):
-    html_stream = io.StringIO()
-    xlsx2html(input_path, html_stream, sheet="Sheet1")
-    html_content = html_stream.getvalue()
+    try:
+        df = pd.read_excel(input_path)
+        html_content = df.to_html(index=False)
 
-    with open(output_path, "wb") as pdf_file:
-        pisa_status = pisa.CreatePDF(io.StringIO(html_content), dest=pdf_file)
+        html = f"""
+        <html>
+            <head>
+                <meta charset="UTF-8">
+                <style>
+                    table {{
+                        width: 100%;
+                        border-collapse: collapse;
+                    }}
+                    th, td {{
+                        border: 1px solid #333;
+                        padding: 4px;
+                        text-align: left;
+                    }}
+                </style>
+            </head>
+            <body>{html_content}</body>
+        </html>
+        """
+        with open(output_path, "wb") as pdf_file:
+            pisa_status = pisa.CreatePDF(html, dest=pdf_file)
 
-    if pisa_status.err:
-        raise Exception("Failed to convert Excel to PDF with formatting.")
+        if pisa_status.err:
+            raise Exception("Failed to convert Excel to PDF.")
+    except Exception as e:
+        raise RuntimeError(f"Excel to PDF conversion error: {e}")
+
 
 # PDF to XLSX
 def pdf_to_xlsx(input_path, output_path):
