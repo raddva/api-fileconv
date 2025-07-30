@@ -3,6 +3,7 @@ FROM python:3.10-slim
 # Install system dependencies
 RUN apt update && apt install -y \
     libreoffice \
+    unoconv \
     poppler-utils \
     build-essential \
     libpango-1.0-0 \

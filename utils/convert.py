@@ -1,7 +1,8 @@
 import os
 import uuid
 import subprocess
-from docx2pdf import convert as docx_convert
+from mammoth import convert_to_html
+from xhtml2pdf import pisa  # or use weasyprint if installed
 from pdf2docx import Converter
 from PIL import Image
 from pptx import Presentation
@@ -22,7 +23,10 @@ def zip_files(file_paths, zip_path):
 
 # DOCX to PDF
 def docx_to_pdf(input_path, output_path):
-    docx_convert(input_path, output_path)
+    try:
+        subprocess.run(["unoconv", "-f", "pdf", "-o", output_path, input_path], check=True)
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(f"Failed to convert DOCX to PDF using unoconv: {e}")
 
 
 # PDF to DOCX

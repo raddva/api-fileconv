@@ -12,12 +12,10 @@ charset-normalizer==3.4.2
 click==8.2.1
 cobble==0.1.4
 colorama==0.4.6
-comtypes==1.4.11
 cryptography==45.0.5
 cssselect2==0.8.0
 Deprecated==1.2.18
 distro==1.9.0
-docx2pdf==0.1.8
 et_xmlfile==2.0.0
 fire==0.7.0
 Flask==2.3.3
@@ -50,7 +48,6 @@ pydyf==0.11.0
 pyHanko==0.29.1
 pyhanko-certvalidator==0.27.0
 PyMuPDF==1.23.24
-PyMuPDFb==1.23.22
 pypdf==5.9.0
 PyPDF2==3.0.1
 pypdfium2==4.30.0
@@ -61,13 +58,11 @@ python-docx==1.1.0
 python-magic==0.4.27
 python-pptx==0.6.21
 pytz==2025.2
-pywin32==311
 PyYAML==6.0.2
 reportlab==4.0.9
 requests==2.32.4
 six==1.17.0
 svglib==1.5.1
-tabula-py==2.10.0
 termcolor==3.1.0
 tinycss2==1.4.0
 tqdm==4.67.1
@@ -81,6 +76,5 @@ webencodings==0.5.1
 Werkzeug==2.3.7
 wrapt==1.17.2
 xhtml2pdf==0.2.17
-xlsx2html==0.6.2
 xlsxwriter==3.2.5
 zopfli==0.2.3.post1
