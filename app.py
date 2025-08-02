@@ -19,6 +19,9 @@ from utils.convert import (
     pdf_to_xlsx,
     zip_files
 )
+from utils.remover import remove_background
+from utils.imgTools import image_to_text, compress_image, upscale_image, to_jpg
+
 import time
 import datetime
 
@@ -27,6 +30,13 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 
 TEMP_DIR = "temp"
 os.makedirs(TEMP_DIR, exist_ok=True)
+
+COMPRESSION_LEVELS = {
+    "high": 30,     # maximum compression (lowest quality)
+    "medium": 60,   # good balance
+    "low": 85       # least compression (highest quality)
+}
+
 
 # -------------------- UTILITIES --------------------
 
@@ -253,6 +263,99 @@ def pdf_to_xlsx_route():
     pdf_to_xlsx(input_path, output_path)
 
     return send_named_file(output_path, f"{base_name}.xlsx")
+
+## ----- IMAGE -----
+
+@app.route('/remove-bg', methods=['POST'])
+def remove_bg_route():
+    file = request.files.get('file')
+    if not file:
+        return jsonify({"error": "No image uploaded"}), 400
+
+    input_path, base_name = save_temp_file(file)
+    output_path = os.path.join(TEMP_DIR, f"{base_name}_nobg.png")
+
+    try:
+        remove_background(input_path, output_path)
+    except Exception as e:
+        return jsonify({"error": f"Background removal failed: {str(e)}"}), 500
+
+    return send_named_file(output_path, os.path.basename(output_path))
+
+@app.route('/image-to-text', methods=['POST'])
+def image_to_text_route():
+    file = request.files.get('file')
+    lang = request.form.get('lang', 'en') 
+
+    if not file:
+        return jsonify({"error": "No image uploaded"}), 400
+
+    input_path, _ = save_temp_file(file)
+
+    try:
+        text = image_to_text(input_path, lang)
+        return jsonify({"text": text})
+    except Exception as e:
+        return jsonify({"error": f"OCR failed: {str(e)}"}), 500
+
+
+@app.route('/image-compress', methods=['POST'])
+def compress_image_route():
+    file = request.files.get('file')
+    level = request.form.get('power', 'medium').lower()
+
+    if not file:
+        return jsonify({"error": "No image uploaded"}), 400
+
+    if level not in COMPRESSION_LEVELS:
+        return jsonify({"error": "Invalid compression level. Choose low, medium, or high."}), 400
+
+    quality = COMPRESSION_LEVELS[level]
+
+    input_path, base_name = save_temp_file(file)
+    output_path = os.path.join(TEMP_DIR, f"{base_name}_compressed.jpg")
+
+    try:
+        compress_image(input_path, output_path, quality=quality)
+    except Exception as e:
+        return jsonify({"error": f"Image compression failed: {str(e)}"}), 500
+
+    return send_named_file(output_path, os.path.basename(output_path))
+
+
+@app.route('/upscale', methods=['POST'])
+def upscale_route():
+    file = request.files.get('file')
+    scale = int(request.form.get('scale', 2))
+    if not file:
+        return jsonify({"error": "No file uploaded"}), 400
+    if scale < 1 or scale > 4:
+        return jsonify({"error": "Scale must be 1-4"}), 400
+
+    input_path, base_name = save_temp_file(file)
+    output_path = os.path.join(TEMP_DIR, f"{base_name}_upscaled.jpg")
+
+    try:
+        upscale_image(input_path, output_path, scale)
+    except Exception as e:
+        return jsonify({"error": f"Upscaling failed: {str(e)}"}), 500
+
+    return send_named_file(output_path, os.path.basename(output_path))
+
+@app.route('/to-jpg', methods=['POST'])
+def to_jpg_route():
+    file = request.files.get('file')
+    if not file:
+        return jsonify({"error": "No image uploaded"}), 400
+    input_path, base_name = save_temp_file(file)
+    output_path = os.path.join(TEMP_DIR, f"{base_name}.jpg")
+    
+    try:
+        to_jpg(input_path, output_path)
+    except Exception as e:
+        return jsonify({"error": f"Conversion to JPG failed: {str(e)}"}), 500
+    
+    return send_named_file(output_path, os.path.basename(output_path))
 
 @app.route('/')
 def home():
