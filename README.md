@@ -10,12 +10,13 @@ This is the backend for a full-stack file converter application built using Flas
   - PDF ↔️ XLSX
   - PDF ↔️ Images
 - Split, merge, and compress PDF files
+- Remove Image Background, Upscale Image, & Image to Text Conversion (new!) 
 - Designed to be used with a Next.js frontend
 - Dockerized for easy deployment
-- Render-compatible deployment (`render.yaml` included)
 
 ## 📁 Project Structure
 
+```bash
 backend/
 ├── temp/ # Temporary working files (ignored in Git)
 ├── utils/ # All core conversion utilities
@@ -26,6 +27,7 @@ backend/
 ├── Dockerfile # Docker setup for deployment
 ├── render.yaml # Render deploy config
 └── requirements.txt # Python dependencies
+```
 
 ## 🚀 Getting Started
 
@@ -43,13 +45,11 @@ backend/
    docker run -p 5000:5000 file-converter
    ```
 
-## 📡 API Endpoints
+## 📡 API Documentation
 
-- Method Endpoint Description
-- POST /pdf-to-docx Converts PDF → DOCX
-- POST /docx-to-pdf Converts DOCX → PDF
-- ... (More coming soon)
+You can find the API Documentation at [Postman]() _(Coming Soon)_
 
-## 📝 License
 
-MIT License
+## 🌐 Deployment
+
+This project has been deployed to [Railway](https://api-fileconv.up.railway.app/)
