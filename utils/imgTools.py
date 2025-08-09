@@ -2,7 +2,6 @@ import easyocr
 import os
 from PIL import Image
 
-
 readers = {
     "en": easyocr.Reader(['en'], gpu=False),
     "id": easyocr.Reader(['id'], gpu=False),

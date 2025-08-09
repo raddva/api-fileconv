@@ -1,6 +1,5 @@
 import fitz
 
-
 def compress_pdf(input_path, output_path, power="medium"):
     """
     Compress a PDF by rendering each page as an image and saving at lower DPI.

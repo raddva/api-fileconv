@@ -1,7 +1,7 @@
 import os
 import uuid
 import subprocess
-from xhtml2pdf import pisa  # or use weasyprint if installed
+from xhtml2pdf import pisa
 from pdf2docx import Converter
 from PIL import Image
 from pptx import Presentation
@@ -9,8 +9,8 @@ import pandas as pd
 import pdfplumber
 import fitz
 import zipfile
-import io
 from pptx.util import Inches
+import mammoth
 
 def zip_files(file_paths, zip_path):
     with zipfile.ZipFile(zip_path, 'w') as zipf:
@@ -20,18 +20,17 @@ def zip_files(file_paths, zip_path):
 
 # DOCX to PDF
 def docx_to_pdf(input_path, output_path):
-    try:
-        subprocess.run(["unoconv", "-f", "pdf", "-o", output_path, input_path], check=True)
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(f"Failed to convert DOCX to PDF using unoconv: {e}")
-
+    with open(input_path, "rb") as docx_file:
+        result = mammoth.convert_to_html(docx_file)
+        html = result.value
+    with open(output_path, "wb") as pdf_file:
+        pisa.CreatePDF(html, dest=pdf_file)
 
 # PDF to DOCX
 def pdf_to_word(input_path, output_path):
     cv = Converter(input_path)
     cv.convert(output_path, start=0, end=None)
     cv.close()
-
 
 # Images to PDF
 def images_to_pdf(file_paths, output_path):

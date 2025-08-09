@@ -363,4 +363,4 @@ def home():
 
 if __name__ == "__main__":
     start_temp_cleanup()  # Every 60 seconds, deletes files older than 300s (5 min)
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
