@@ -1,6 +1,7 @@
-# 🧾 File Converter Backend
+# 🧾 FILECONV API
 
-This is the backend for a full-stack file converter application built using Flask and Python.
+This is the backend for a full-stack file converter application built using **Flask** and **Python**.
+It provides a fast, reliable, and cross-platform API for converting, compressing, splitting, and merging a wide range of file formats — all optimized for deployment in modern cloud environments.
 
 ## 📦 Features
 
@@ -10,7 +11,7 @@ This is the backend for a full-stack file converter application built using Flas
   - PDF ↔️ XLSX
   - PDF ↔️ Images
 - Split, merge, and compress PDF files
-- Remove Image Background, Upscale Image, & Image to Text Conversion (new!) 
+- Remove Image Background, Upscale Image, & Image to Text Conversion (new!)
 - Designed to be used with a Next.js frontend
 - Dockerized for easy deployment
 
@@ -49,7 +50,10 @@ backend/
 
 You can find the API Documentation at [Postman]() _(Coming Soon)_
 
-
 ## 🌐 Deployment
 
-This project has been deployed to [Railway](https://api-fileconv.up.railway.app/)
+This project will be deployed to [Render](https:/render.com/)
+
+## 🙋‍♀️ Author
+
+Made with ❤️ by Asdya.

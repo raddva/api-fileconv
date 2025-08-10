@@ -5,6 +5,7 @@ import uuid
 import threading
 from werkzeug.utils import secure_filename
 
+from utils.generate import generate_qr_code
 from utils.merge import merge_pdfs
 from utils.split import split_pdf_ranges
 from utils.compress import compress_pdf
@@ -23,7 +24,6 @@ from utils.remover import remove_background
 from utils.imgTools import image_to_text, compress_image, upscale_image, to_jpg
 
 import time
-import datetime
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
@@ -36,9 +36,6 @@ COMPRESSION_LEVELS = {
     "medium": 60,   # good balance
     "low": 85       # least compression (highest quality)
 }
-
-
-# -------------------- UTILITIES --------------------
 
 def start_temp_cleanup(interval=60, max_age=300):
     def cleanup():
@@ -356,6 +353,26 @@ def to_jpg_route():
         return jsonify({"error": f"Conversion to JPG failed: {str(e)}"}), 500
     
     return send_named_file(output_path, os.path.basename(output_path))
+
+@app.route('/qr-generator', methods=['POST'])
+def qr_generator_route():
+    data = request.get_json()
+    if not data or 'text' not in data:
+        return jsonify({"error": "Missing text field"}), 400
+
+    text = data['text'].strip()
+    if not text:
+        return jsonify({"error": "Text cannot be empty"}), 400
+
+    output_filename = f"qr_{uuid.uuid4().hex}.png"
+    output_path = os.path.join(TEMP_DIR, output_filename)
+
+    try:
+        generate_qr_code(text, output_path)
+    except Exception as e:
+        return jsonify({"error": f"QR generation failed: {str(e)}"}), 500
+
+    return send_named_file(output_path, output_filename)
 
 @app.route('/')
 def home():

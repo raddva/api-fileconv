@@ -15,3 +15,4 @@ opencv-python
 torch
 torchvision
 mammoth
+qrcode[pil]
