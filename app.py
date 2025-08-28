@@ -5,6 +5,7 @@ import uuid
 import threading
 from werkzeug.utils import secure_filename
 
+from utils.youtube import download_youtube_mp3
 from utils.generate import generate_qr_code
 from utils.merge import merge_pdfs
 from utils.split import split_pdf_ranges
@@ -373,6 +374,24 @@ def qr_generator_route():
         return jsonify({"error": f"QR generation failed: {str(e)}"}), 500
 
     return send_named_file(output_path, output_filename)
+
+@app.route('/youtube-mp3', methods=['POST'])
+def youtube_mp3_route():
+    print("DEBUG: Content-Type:", request.content_type)
+    print("DEBUG: Raw data:", request.data)
+    print("DEBUG: JSON data:", request.get_json())
+
+    data = request.get_json()
+    if not data or 'url' not in data:
+        return jsonify({"error": "Missing YouTube URL"}), 400
+
+    url = data['url']
+    try:
+        mp3_path, title = download_youtube_mp3(url, TEMP_DIR)
+        safe_title = f"{secure_filename(title)}.mp3"
+        return send_named_file(mp3_path, safe_title)
+    except Exception as e:
+        return jsonify({"error": f"Download failed: {str(e)}"}), 500
 
 @app.route('/')
 def home():
